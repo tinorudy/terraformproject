@@ -107,8 +107,8 @@ resource "aws_instance" "fife" {
   }
 }
 #CREATE APPLICATION LOAD BALANCER
-resource "aws_lb" "test" {
-  name               = "test-lb-tf"
+resource "aws_lb" "tino_alb" {
+  name               = "tino-lb"
   internal           = false
   load_balancer_type = "application"
   security_groups    = ["${aws_security_group.allowed-access.id}"]
