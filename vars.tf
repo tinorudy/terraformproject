@@ -11,8 +11,9 @@ variable "cdb" {
 }
 
 variable "pri_az" {
-   type = "string"
+  type = "string"
 }
+
 variable "pri_cdb" {
-   type = "string"
+  type = "string"
 }
