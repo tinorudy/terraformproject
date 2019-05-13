@@ -114,7 +114,7 @@ resource "aws_lb" "tino_alb" {
   security_groups    = ["${aws_security_group.allowed-access.id}"]
   subnets            = ["${aws_subnet.public.*.id}"]
 
-  enable_deletion_protection = true
+  enable_deletion_protection = false
 
   #access_logs {
     #bucket  = "${aws_s3_bucket.lb_logs.bucket}"
