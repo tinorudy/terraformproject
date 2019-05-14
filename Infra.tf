@@ -126,3 +126,43 @@ resource "aws_lb" "tino_alb" {
     Environment = "production"
   }
 }
+
+#CREATE LISTENER ON ALB
+
+resource "aws_lb_listener" "tino-listens" {
+  load_balancer_arn = "${aws_lb.tino_alb.arn}"
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+#CREATE TARGET GROUP
+
+resource "aws_lb_target_group" "tino-tg" {
+  name     = "tino-alb-tino-tg"
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = "${aws_vpc.main.id}"
+}
+
+#resource "aws_vpc" "main" {
+  #cidr_block = "192.168.0.0/28"
+#}
+
+#CREATE TARGET GROUP ATTACHMENT
+
+resource "aws_lb_target_group_attachment" "tino-tg-attach" {
+  count = "${length(var.ec2)}"
+  target_group_arn = "${aws_lb_target_group.tino-tg.arn}"
+  target_id        = "${element(var.ec2 , count.index)}"
+  port             = 80
+}
