@@ -38,10 +38,12 @@ resource "aws_subnet" "private" {
     Name = "FIKUN"
   }
 }
+
 #CREATE  INTERNET GATEWAY
 resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.main.id}"
 }
+
 #CREATE ROUTE TABLES
 resource "aws_route_table" "my_route" {
   vpc_id = "${aws_vpc.main.id}"
@@ -57,12 +59,14 @@ resource "aws_route_table" "my_route" {
     Name        = "fikun"
   }
 }
+
 #CREATE ROUTE TABLE ASSOCIATION
 resource "aws_route_table_association" "a" {
   count          = "${length(var.cdb)}"
   subnet_id      = "${element(aws_subnet.public.*.id, count.index)}"
   route_table_id = "${element(aws_route_table.my_route.*.id, count.index)}"
 }
+
 #CREATE SECURITY GROUPS
 resource "aws_security_group" "allowed-access" {
   name        = "sg"
@@ -90,6 +94,7 @@ resource "aws_security_group" "allowed-access" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
 #CREATE  EC2 INSTANCES
 resource "aws_instance" "fife" {
   ami                         = "ami-08935252a36e25f85"
@@ -106,6 +111,7 @@ resource "aws_instance" "fife" {
     Name = "web-server"
   }
 }
+
 #CREATE APPLICATION LOAD BALANCER
 resource "aws_lb" "tino_alb" {
   name               = "tino-lb"
@@ -117,9 +123,9 @@ resource "aws_lb" "tino_alb" {
   enable_deletion_protection = false
 
   #access_logs {
-    #bucket  = "${aws_s3_bucket.lb_logs.bucket}"
-    #prefix  = "test-lb"
-    #enabled = true
+  #bucket  = "${aws_s3_bucket.lb_logs.bucket}"
+  #prefix  = "test-lb"
+  #enabled = true
   #}
 
   tags = {
@@ -155,14 +161,25 @@ resource "aws_lb_target_group" "tino-tg" {
 }
 
 #resource "aws_vpc" "main" {
-  #cidr_block = "192.168.0.0/28"
+#cidr_block = "192.168.0.0/28"
 #}
 
 #CREATE TARGET GROUP ATTACHMENT
 
 resource "aws_lb_target_group_attachment" "tino-tg-attach" {
-  count = "${length(var.ec2)}"
+  #count = "${var.ec2}"
   target_group_arn = "${aws_lb_target_group.tino-tg.arn}"
-  target_id        = "${element(var.ec2 , count.index)}"
-  port             = 80
+  target_id        = "${aws_instance.fife.0.id}"
+
+  #target_id        = "${element(var.ec2, count.index)}"
+  port = 80
+}
+
+resource "aws_lb_target_group_attachment" "tino-tg-attach1" {
+  #count = "${var.ec2}"
+  target_group_arn = "${aws_lb_target_group.tino-tg.arn}"
+  target_id        = "${aws_instance.fife.1.id}"
+
+  #target_id        = "${element(var.ec2, count.index)}"
+  port = 80
 }

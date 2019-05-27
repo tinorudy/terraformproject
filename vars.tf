@@ -17,6 +17,7 @@ variable "pri_az" {
 variable "pri_cdb" {
   type = "string"
 }
+
 variable "ec2" {
-   type = "list"
+  type = "list"
 }
