@@ -95,6 +95,7 @@ resource "aws_security_group" "allowed-access" {
   }
 }
 
+
 #CREATE  EC2 INSTANCES
 resource "aws_instance" "fife" {
   ami                         = "ami-08935252a36e25f85"
@@ -182,4 +183,45 @@ resource "aws_lb_target_group_attachment" "tino-tg-attach1" {
 
   #target_id        = "${element(var.ec2, count.index)}"
   port = 80
+}
+
+#CREATE LAUNCH CONFIGURATION
+
+data "aws_ami" "amzn-ami-hvm" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn-ami-hvm-2018.03.0.20181129-x86_64-gp2"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["137112412989"] # Canonical
+}
+
+resource "aws_launch_configuration" "tino_launch" {
+  name_prefix   = "launch_template"
+  image_id      = "${data.aws_ami.amzn-ami-hvm.id}"
+  instance_type = "t2.micro"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+#CREATE AUTO SCALING GROUP
+resource "aws_autoscaling_group" "tino_asg" {
+  name                 = "asg_template"
+  launch_configuration = "${aws_launch_configuration.tino_launch.name}"
+   vpc_zone_identifier       = ["${aws_subnet.public.*.id}"]
+  min_size             = 1
+  max_size             = 2
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
