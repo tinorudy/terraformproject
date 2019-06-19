@@ -176,14 +176,6 @@ resource "aws_lb_target_group_attachment" "tino-tg-attach" {
   port = 80
 }
 
-resource "aws_lb_target_group_attachment" "tino-tg-attach1" {
-  #count = "${var.ec2}"
-  target_group_arn = "${aws_lb_target_group.tino-tg.arn}"
-  target_id        = "${aws_instance.fife.1.id}"
-
-  #target_id        = "${element(var.ec2, count.index)}"
-  port = 80
-}
 
 #CREATE LAUNCH CONFIGURATION
 
