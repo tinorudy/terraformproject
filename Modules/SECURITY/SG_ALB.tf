@@ -1,4 +1,4 @@
-resource "aws_security_group" "allowed-access" {
+resource "aws_security_group" "default" {
   name        = "sg"
   description = "allow inbound traffic"
   #vpc_id      = "${module.my_vpc.vpc_id}"
@@ -30,5 +30,5 @@ resource "aws_security_group" "allowed-access" {
 
 
 output "aws_security_group_id" {
-  value = "${aws_security_group.allowed-access.id}"
+  value = "${aws_security_group.default.id}"
 }
